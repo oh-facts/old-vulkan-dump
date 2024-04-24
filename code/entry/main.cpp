@@ -1,11 +1,14 @@
-
+#if defined(__unix__) || defined(__APPLE__)
+#pragma GCC push_options
+#pragma GCC optimize ("no-stack-protector")
+#endif
 // code
 #include <os/os.h>
 
 // 3rd party
 #define STB_SPRINTF_IMPLEMENTATION
 #include <third_party/stb_sprintf.h>
-#include <third_party/HandmadeMath.h>
+#include <third_party/handmade_math.h>
 
 extern "C"
 {
@@ -42,7 +45,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 HANDLE hStdout;
 
 // todo
-// write a text buffer and print that
+// write to a text buffer and print that
 
 int strlen(char *string)
 {
@@ -120,3 +123,12 @@ int __stdcall mainCRTStartup()
   
   ExitProcess(0);
 }
+
+#if defined(__unix__) || defined(__APPLE__)
+
+int main()
+{
+  mainCRTStartup();
+}
+
+#endif

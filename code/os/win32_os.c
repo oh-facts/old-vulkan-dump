@@ -1,5 +1,5 @@
 // function to write to file
-
+/*
 #if defined(__unix__) || defined(__APPLE__)
 #define fopen_s(pFile, filepath, mode) ((*(pFile)) = fopen((filepath), (mode))) == NULL
 #endif
@@ -70,3 +70,4 @@ b32 yk_write_binary_file(const char *filepath, const u8 *data, size_t size)
   
   return 1;
 }
+*/
