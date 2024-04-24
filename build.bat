@@ -1,0 +1,1 @@
+clang -nostdlib code/entry/main.cpp -lkernel32 -luser32 -ld3d12  -lgdi32 -I./code -o out/yk.exe  -Xlinker /subsystem:console
