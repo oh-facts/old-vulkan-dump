@@ -3,7 +3,6 @@
 ### Invocation command line was
 ### /usr/bin/winemaker . -I./. -igdi32
 
-
 SRCDIR                = .
 SUBDIRS               =
 DLLS                  =
@@ -18,7 +17,7 @@ CEXTRA                = -mno-cygwin
 CXXEXTRA              =
 RCEXTRA               =
 DEFINES               =
-INCLUDE_PATH          = -I./.
+INCLUDE_PATH          = -I./code
 DLL_PATH              =
 DLL_IMPORTS           = gdi32
 LIBRARY_PATH          =
@@ -29,7 +28,7 @@ LIBRARIES             =
 
 code_exe_MODULE       = code.exe
 code_exe_C_SRCS       =
-code_exe_CXX_SRCS     = entry/main.cpp
+code_exe_CXX_SRCS     = code/entry/main.cpp
 code_exe_RC_SRCS      =
 code_exe_LDFLAGS     += -mwindows \
 			-mno-cygwin\
