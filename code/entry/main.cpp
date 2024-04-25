@@ -28,7 +28,7 @@ int strlen(char *string)
 
 void print(const char *format, ...)
 {
-  char buffer[30];
+  char buffer[256];
   DWORD bytesWritten;
   va_list args;
   
