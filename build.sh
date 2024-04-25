@@ -1,1 +1,1 @@
-wineg++ -mwindows -mno-cygwin -nostdlib -lkernel32 -luser32 -L%VULKAN_SDK% -lvulkan-1 -fno-stack-protector -o code.exe code/entry/main.cpp -I./code/  -lgdi32 -lodbc32 -lole32 -loleaut32 -lwinspool -lodbccp32 -luuid
+wineg++ -mwindows -mno-cygwin -nostdlib -lkernel32 -luser32 -L%VULKAN_SDK% -lvulkan-1 -fno-stack-protector -o out/yk code/entry/main.cpp -I./code/  -lgdi32 -lodbc32 -lole32 -loleaut32 -lwinspool -lodbccp32 -luuid
