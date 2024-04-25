@@ -25,6 +25,10 @@ int strlen(char *string)
   return len;
 }
 
+// change this when you have time
+// print - prints directly to the console, 512 limit
+// printb - prints to a buffer, no limit
+// printbc - prints buffer to a console, no limit
 
 void print(const char *format, ...)
 {
@@ -283,48 +287,55 @@ int __stdcall mainCRTStartup()
                                      );
     AssertM(res == VK_SUCCESS, "Physical device retrieval failed.");
     
-    ArenaTemp temp_arena = arena_temp_begin(&scratch);
+    VkPhysicalDevice phys_device = {};
     
-    // todo(facts) : print api needs to be worked on
-    char *buffer = push_array(&scratch, char, Megabytes(1)); 
-    char *offset = buffer;
-    
-    vsnprint(offset, 256, "\n\nHello sailor. Here is device info\n");
-    offset = buffer + strlen(buffer);
-    
-    for(u32 i = 0; i < phys_device_count; i++)
     {
-      VkPhysicalDeviceProperties props = {};
-      vkGetPhysicalDeviceProperties(phys_devices[i], &props);
+      ArenaTemp temp_arena = arena_temp_begin(&scratch);
       
-      vsnprint(offset, 256, "%d. ", i);
+      // todo(facts) : print api needs to be worked on
+      char *buffer = push_array(&scratch, char, Megabytes(1)); 
+      char *offset = buffer;
+      
+      vsnprint(offset, 256, "\n\nHello sailor. Here is device info\n");
       offset = buffer + strlen(buffer);
       
-      // todo(facts) : do this busy work later
-      switch(props.deviceType)
+      for(u32 i = 0; i < phys_device_count; i++)
       {
+        VkPhysicalDeviceProperties props = {};
+        vkGetPhysicalDeviceProperties(phys_devices[i], &props);
         
-        case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-        {
-          vsnprint(offset, 256, "discrete gpu\n");
-        }break;
+        vsnprint(offset, 256, "%d. ", i);
+        offset = buffer + strlen(buffer);
         
-        case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+        // todo(facts) : do this busy work later
+        switch(props.deviceType)
         {
-          vsnprint(offset, 256, "integrated gpu\n");
-        }break;
-        default:
-        {
-          vsnprint(offset, 256, "other\n");
+          case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+          {
+            vsnprint(offset, 256, "discrete gpu\n");
+            phys_device = phys_devices[i];
+          }break;
+          
+          case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+          {
+            vsnprint(offset, 256, "integrated gpu\n");
+          }break;
+          default:
+          {
+            vsnprint(offset, 256, "other\n");
+          }
         }
+        
+        offset = buffer + strlen(buffer);
       }
       
-      offset = buffer + strlen(buffer);
+      print_buffer(buffer, sizeof(buffer));
+      
+      arena_temp_end(&temp_arena);
     }
     
-    print_buffer(buffer, sizeof(buffer));
+    // todo(facts): set device features / properties
     
-    arena_temp_end(&temp_arena);
     
     
     
