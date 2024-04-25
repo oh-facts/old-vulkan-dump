@@ -1,1 +1,1 @@
-clang++ -std=c++17 -nostdlib code/entry/main.cpp -lkernel32 -luser32 -lgdi32 -I./code -I%VULKAN_SDK%/include -l%VULKAN_SDK%/lib/vulkan-1  -o out/yk.exe  -Xlinker /subsystem:console
+wineg++ -mwindows -mno-cygwin -nostdlib -lkernel32 -luser32 -L%VULKAN_SDK% -lvulkan-1 -fno-stack-protector -o code.exe code/entry/main.cpp -I./code/  -lgdi32 -lodbc32 -lole32 -loleaut32 -lwinspool -lodbccp32 -luuid
