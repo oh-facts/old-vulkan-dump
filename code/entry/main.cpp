@@ -46,7 +46,7 @@ void print(const char *format, ...)
   }
 }
 
-void print(char *buffer, size_t size, const char *format, ...)
+void vsnprint(char *buffer, size_t size, const char *format, ...)
 {
   va_list args;
   
@@ -289,7 +289,7 @@ int __stdcall mainCRTStartup()
     char *buffer = push_array(&scratch, char, Megabytes(1)); 
     char *offset = buffer;
     
-    print(offset, 256, "\n\nHello sailor. Here is device info\n");
+    vsnprint(offset, 256, "\n\nHello sailor. Here is device info\n");
     offset = buffer + strlen(buffer);
     
     for(u32 i = 0; i < phys_device_count; i++)
@@ -297,7 +297,7 @@ int __stdcall mainCRTStartup()
       VkPhysicalDeviceProperties props = {};
       vkGetPhysicalDeviceProperties(phys_devices[i], &props);
       
-      print(offset, 256, "%d. ", i);
+      vsnprint(offset, 256, "%d. ", i);
       offset = buffer + strlen(buffer);
       
       // todo(facts) : do this busy work later
@@ -306,16 +306,16 @@ int __stdcall mainCRTStartup()
         
         case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
         {
-          print(offset, 256, "discrete gpu\n");
+          vsnprint(offset, 256, "discrete gpu\n");
         }break;
         
         case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
         {
-          print(offset, 256, "integrated gpu\n");
+          vsnprint(offset, 256, "integrated gpu\n");
         }break;
         default:
         {
-          print(offset, 256, "other\n");
+          vsnprint(offset, 256, "other\n");
         }
       }
       
