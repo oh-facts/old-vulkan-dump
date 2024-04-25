@@ -4,34 +4,23 @@
 #define OS_H
 
 
+#if defined(__unix__) || defined(__APPLE__)
+#pragma GCC push_options
+#pragma GCC optimize ("no-stack-protector")
+#endif
 
-extern "C"
-{
-#pragma function(memset)
-  void *memset(void *dest, int c, size_t count)
-  {
-    char *bytes = (char *)dest;
-    while (count--)
-    {
-      *bytes++ = (char)c;
-    }
-    return dest;
-  }
-  
-#pragma function(memcpy)
-  void *memcpy(void *dest, const void *src, size_t count)
-  {
-    char *dest8 = (char *)dest;
-    const char *src8 = (const char *)src;
-    while (count--)
-    {
-      *dest8++ = *src8++;
-    }
-    return dest;
-  }
-}
 
-#if _WIN32
+#if defined(_WIN32)
+#define OS_WIN32
+#elif defined ( __unix__)
+#define OS_UNIX
+#elif defined( __APPLE__)
+#define OS_APPLE
+#endif
+
+
+
+#if defined(OS_WIN32)
 
 extern "C"
 {
@@ -66,20 +55,6 @@ extern "C"
 
 #include <windows.h>
 
-#endif
-
-#if defined(__unix__) || defined(__APPLE__)
-#pragma GCC push_options
-#pragma GCC optimize ("no-stack-protector")
-#endif
-
-
-#if defined(_WIN32)
-#define OS_WIN32
-#elif defined ( __unix__)
-#define OS_UNIX
-#elif defined( __APPLE__)
-#define OS_APPLE
 #endif
 
 #endif //OS_H
