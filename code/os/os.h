@@ -74,5 +74,12 @@ extern "C"
 #endif
 
 
+#if defined(_WIN32)
+#define OS_WIN32
+#elif defined ( __unix__)
+#define OS_UNIX
+#elif defined( __APPLE__)
+#define OS_APPLE
+#endif
 
 #endif //OS_H

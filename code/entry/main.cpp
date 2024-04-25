@@ -87,6 +87,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 #include <vulkan/vulkan.h>
+#define USE_VALIDATION_LAYERS 1
+
+#if defined (OS_WIN32)
+#include <vulkan/vulkan_win32.h>
+#elif defined(OS_UNIX)
+#include <vulkan/vulkan_xcb.h>
+#endif
+
+#if DEBUG
+LPVOID base_address = (LPVOID)Terabytes(2);
+#else
+LPVOID base_address = 0;
+#endif
+
 
 int __stdcall mainCRTStartup()
 {
@@ -122,16 +136,81 @@ int __stdcall mainCRTStartup()
     UpdateWindow(win);
     
     
+    size_t mem_size = Megabytes(256);
+    void *memory = VirtualAlloc(base_address, mem_size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    
+    AssertM(memory, "you dont have 256 mb of free memory");
+    
+    size_t arena_size = mem_size / 2;
+    
+    Arena arena = {};
+    arena_innit(&arena, arena_size, memory);
+    
+    Arena scratch = {};
+    arena_innit(&scratch, (mem_size - arena_size) ,  (u8*)memory + arena_size);
+    
     // vulkan lets go
     
     u32 version = 0;
     vkEnumerateInstanceVersion(&version);
     
-    print("\n%d.%d.%d\n"
+    print("\nVulkan Version: %d.%d.%d\n"
           ,VK_VERSION_MAJOR(version)
           ,VK_VERSION_MINOR(version)
           ,VK_VERSION_PATCH(version)
           );
+    
+    
+    // extentions and validation layers
+    
+    const char *extentions[3] = {};
+    u32 extention_num = 0;
+    
+    const char *validation_layers[1] = {};
+    u32 validation_layers_num = 0;
+    
+    extentions[extention_num++] = VK_KHR_SURFACE_EXTENSION_NAME;
+    
+#if defined(OS_WIN32)
+    extentions[extention_num++] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif defined(OS_UNIX)
+    extentions[extention_num++] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#endif
+    
+#if USE_VALIDATION_LAYERS
+    
+    validation_layers[validation_layers_num++] = {
+      "VK_LAYER_KHRONOS_validation"
+    };
+    
+    extentions[extention_num++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    
+#endif
+    VkApplicationInfo vk_app_info = {
+      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+      .pNext = 0,
+      .pApplicationName = "app",
+      .applicationVersion = 0,
+      .pEngineName = "engine",
+      .engineVersion = 0,
+      .apiVersion = VK_API_VERSION_1_3
+    };
+    
+    VkInstanceCreateInfo vk_create_info = {
+      .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .pNext = 0,
+      .flags = 0,
+      .pApplicationInfo = &vk_app_info,
+      .enabledLayerCount = validation_layers_num,
+      .ppEnabledLayerNames = validation_layers,
+      .enabledExtensionCount = extention_num,
+      .ppEnabledExtensionNames = extentions
+    };
+    
+    VkInstance vk_inst = {};
+    VkResult res = vkCreateInstance(&vk_create_info, 0, &vk_inst);
+    
+    AssertM(res == VK_SUCCESS, "instance creation is not great success");
     
     
     MSG msg;

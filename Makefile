@@ -35,7 +35,8 @@ code_exe_LDFLAGS     += -mwindows \
 			-nostdlib\
 			-kernel32\
 			-user32\
-    	-fno-stack-protector
+    	-fno-stack-protector\
+      -lvulkan
 	
 code_exe_ARFLAGS      =
 code_exe_DLL_PATH     =
