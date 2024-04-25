@@ -28,7 +28,7 @@ int strlen(char *string)
 
 void print(const char *format, ...)
 {
-  char buffer[256];
+  char buffer[512];
   DWORD bytesWritten;
   va_list args;
   
@@ -46,7 +46,29 @@ void print(const char *format, ...)
   }
 }
 
+void print(char *buffer, size_t size, const char *format, ...)
+{
+  va_list args;
+  
+  va_start(args, format);
+  
+  stbsp_vsnprintf(buffer, size, format, args);
+  
+  va_end(args);
+  
+}
 
+void print_buffer(char *buffer, size_t size)
+{
+  DWORD bytesWritten;
+  
+  int failed = WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, strlen(buffer), &bytesWritten, NULL);
+  
+  if (!failed)
+  {
+    MessageBoxA(NULL, ":(", ":)", MB_OK | MB_ICONINFORMATION);
+  }
+}
 
 #define YK_CRT
 #include <base/base_inc.h>
@@ -235,7 +257,76 @@ int __stdcall mainCRTStartup()
     VkInstance vk_inst = {};
     VkResult res = vkCreateInstance(&vk_create_info, 0, &vk_inst);
     
-    AssertM(res == VK_SUCCESS, "instance creation is not great success");
+    AssertM(res == VK_SUCCESS, "instance creation is not great success. This is reason to crash. Bye Bye :(");
+    
+    u32 phys_device_count = 0;
+    res = vkEnumeratePhysicalDevices(
+                                     vk_inst,
+                                     &phys_device_count,
+                                     0
+                                     );
+    
+    print("\nPhysical Devices: %d",phys_device_count);
+    
+    AssertM(res == VK_SUCCESS, "Physical device retrieval failed.");
+    
+    VkPhysicalDevice *phys_devices = push_array(
+                                                &scratch, 
+                                                VkPhysicalDevice, 
+                                                phys_device_count
+                                                );
+    
+    res = vkEnumeratePhysicalDevices(
+                                     vk_inst,
+                                     &phys_device_count,
+                                     phys_devices
+                                     );
+    AssertM(res == VK_SUCCESS, "Physical device retrieval failed.");
+    
+    ArenaTemp temp_arena = arena_temp_begin(&scratch);
+    
+    // todo(facts) : print api needs to be worked on
+    char *buffer = push_array(&scratch, char, Megabytes(1)); 
+    char *offset = buffer;
+    
+    print(offset, 256, "\n\nHello sailor. Here is device info\n");
+    offset = buffer + strlen(buffer);
+    
+    for(u32 i = 0; i < phys_device_count; i++)
+    {
+      VkPhysicalDeviceProperties props = {};
+      vkGetPhysicalDeviceProperties(phys_devices[i], &props);
+      
+      print(offset, 256, "%d. ", i);
+      offset = buffer + strlen(buffer);
+      
+      // todo(facts) : do this busy work later
+      switch(props.deviceType)
+      {
+        
+        case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+        {
+          print(offset, 256, "discrete gpu\n");
+        }break;
+        
+        case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+        {
+          print(offset, 256, "integrated gpu\n");
+        }break;
+        default:
+        {
+          print(offset, 256, "other\n");
+        }
+      }
+      
+      offset = buffer + strlen(buffer);
+    }
+    
+    print_buffer(buffer, sizeof(buffer));
+    
+    arena_temp_end(&temp_arena);
+    
+    
     
     
     MSG msg;

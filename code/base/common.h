@@ -66,6 +66,12 @@ struct Arena
   size_t used;
 };
 
+struct ArenaTemp
+{
+  Arena *arena;
+  size_t pos;
+};
+
 internal void* _arena_alloc(struct Arena* arena, size_t size)
 {
   Assert(arena->used + size <= arena->size);
@@ -78,6 +84,18 @@ internal void* _arena_alloc(struct Arena* arena, size_t size)
 #define push_struct(arena, type) (type*)_arena_alloc(arena, sizeof(type))
 
 #define push_array(arena,type,count) (type*)_arena_alloc(arena, sizeof(type) * count)
+internal ArenaTemp arena_temp_begin(Arena *arena)
+{
+  ArenaTemp out = {0};
+  out.arena = arena;
+  out.pos = arena->used;
+  return out;
+}
+
+internal void arena_temp_end(ArenaTemp *temp)
+{
+  temp->arena->used = temp->pos;
+}
 
 internal void arena_innit(struct Arena* arena, size_t size, void* base)
 {

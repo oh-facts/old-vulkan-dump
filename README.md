@@ -6,19 +6,20 @@ I want to track with vcs so I am putting here. No point in trying to build. Infa
 
 # yekate
 
-D3D12 renderer.
+vulkan renderer.
 
 Tested on win32 w/ clang and on unix-like with winemaker.
 
 I am going to make a vidjya game with this engine.
 
-amélie said it is good idea to use d3d12.
-
 ## Compiling
+
+You need to have vulkan 1.3 and the `VULKAN_SDK` env variable set up.
 
 ### Windows 
 
 ```
+mkdir out
 ./build.bat
 ```
 Uses clang. Write your own for other compilers. Scroll down to learn how.
@@ -27,10 +28,9 @@ Uses clang. Write your own for other compilers. Scroll down to learn how.
 
 You need to have wine dev tools installed (winemaker). Should compile without problems.
 ```
-make
+mkdir out
+./build.sh
 ```
-
-Look at the Makefile if you want to understand it better.
 
 ### Writing your own
 
@@ -38,15 +38,9 @@ If you want to compile yourself, here is all the theory you need.
 
 - Source files        : `code/entry/main.cpp`
 - Include directories : `code/`
-- compiler flags      : `-nostdlib -lkernel32 -luser32 -ld3d12 -lgdi32`
-- linker flags        : `-Xlinker /subsystem:console`
+- compiler flags      : `-nostdlib -lkernel32 -luser32 -lgdi32 -vulkan-1`
 
 Look for equivalents for your platform / compiler.
-
-For example, I use clang on windows, so I do this:
-
-```
-clang -nostdlib code/entry/main.cpp -lkernel32 -luser32 -ld3d12  -lgdi32 -I./code -o out/yk.exe  -Xlinker /subsystem:console
 ```
 
 I also pass `-g` so I can have debug symbols. You don't need it unless you are developing.
@@ -54,8 +48,6 @@ I also pass `-g` so I can have debug symbols. You don't need it unless you are d
 ## For contributors
 
 ### Contributing
-
-You need to have windows to use d3d12 dev tools. Otherwise, any OS is fine.
 
 Open an issue for anything.
 
