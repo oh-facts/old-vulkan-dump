@@ -152,6 +152,14 @@ LPVOID base_address = (LPVOID)Terabytes(2);
 LPVOID base_address = 0;
 #endif
 
+enum qfam_type
+{
+  qfam_gfx,
+  qfam_comp,
+  qfam_trans,
+  qfam_pres,
+  qfam_num
+};
 
 int __stdcall mainCRTStartup()
 {
@@ -336,9 +344,105 @@ int __stdcall mainCRTStartup()
     
     // todo(facts): set device features / properties
     
+    // todo(facts): preemptively make a vk_state and put this crap in there
     
+    // surfaces
+    VkSurfaceKHR surface = {};
+    {
+      VkWin32SurfaceCreateInfoKHR win32_surf_info = {
+        .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+        .pNext = 0,
+        .flags = 0,
+        .hinstance = GetModuleHandle(0),
+        .hwnd = win
+      };
+      
+      vkCreateWin32SurfaceKHR(vk_inst, &win32_surf_info, 0, &surface);
+      
+    }
     
+    // queue stuff
+    // No comparisions to find best queue is done. But the scaffolding is there
     
+    u32 qfams[qfam_num] = {};
+    
+    {
+      ArenaTemp temp_arena = arena_temp_begin(&scratch);
+      
+      b32 qfamsfound[qfam_num] = {};
+      
+      u32 qnum = 0;
+      vkGetPhysicalDeviceQueueFamilyProperties(phys_device, &qnum, 0);
+      
+      VkQueueFamilyProperties *qfam_props = push_array(
+                                                       &scratch, 
+                                                       VkQueueFamilyProperties,
+                                                       qnum
+                                                       );
+      
+      vkGetPhysicalDeviceQueueFamilyProperties(phys_device, &qnum, qfam_props);
+      
+      
+      for(u32 i = 0; i < qnum; i++)
+      {
+        if(!qfamsfound[qfam_gfx])
+        {
+          if(qfam_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+          {
+            qfams[qfam_gfx] = i; 
+            qfamsfound[qfam_gfx] = true;
+          }
+        }
+        
+        if(!qfamsfound[qfam_comp])
+        {
+          if(qfam_props[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+          {
+            qfams[qfam_comp] = i; 
+            qfamsfound[qfam_comp] = true;
+          }
+        }
+        
+        if(!qfamsfound[qfam_trans])
+        {
+          if(qfam_props[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+          {
+            qfams[qfam_trans] = i; 
+            qfamsfound[qfam_trans] = true;
+          }
+        }
+        
+        if(!qfamsfound[qfam_pres])
+        {
+          VkBool32 present_support = VK_FALSE;
+          vkGetPhysicalDeviceSurfaceSupportKHR(phys_device, i, surface, &present_support);
+          if(present_support == VK_TRUE)
+          {
+            qfams[qfam_pres] = i;
+            qfamsfound[qfam_pres] = true;
+          }
+        }
+        
+      }
+      
+      AssertM(qfamsfound, "Oh no, present mode not found");
+      
+      for(u32 i = 0; i < qfam_num; i ++)
+      {
+        print("%d %d\n", i, qfams[i] );
+      }
+      
+      arena_temp_end(&temp_arena);
+    }
+    
+    // logic device
+    
+    {
+      ArenaTemp temp_arena = arena_temp_begin(&scratch);
+      
+      
+      arena_temp_end(&temp_arena);
+    }
     
     MSG msg;
     while(is_running)
