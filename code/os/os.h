@@ -4,12 +4,6 @@
 #define OS_H
 
 
-#if defined(__unix__) || defined(__APPLE__)
-#pragma GCC push_options
-#pragma GCC optimize ("no-stack-protector")
-#endif
-
-
 #if defined(_WIN32)
 #define OS_WIN32
 #elif defined (__linux__)
@@ -18,6 +12,10 @@
 #define OS_APPLE
 #endif
 
+#if defined(OS_LINUX) || defined(OS_APPLE)
+#pragma GCC push_options
+#pragma GCC optimize ("no-stack-protector")
+#endif
 
 
 #if defined(OS_WIN32)

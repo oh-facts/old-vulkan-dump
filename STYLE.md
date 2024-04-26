@@ -1,10 +1,29 @@
 ### style guide
 
-### 1 Indentation:
-- Use tabs. 1 tab = 2 spaces.
-- Multiple indentations even upto 8 are fine. Put body in a function only if you find yourself repeating code or if the function is absurdly large.
-- Don't return early from functions if you can help it. Code flow is easier to read if you have a defined entry and exit. Multithreading is also easier in the future.
+This codebase uses modern C++ features. Please respect that.
 
+I am not justifying myself anymore since no one askd. Maybe an old commit mentions it. Feel free to open an issue to discuss them.
+
+These are rules that contributors need to abide by.
+I am keeping them brief and removing snide to save time.
+
+## Don'ts
+
+- Don't use const.
+- Don't use the crt.
+- Don't use the stl.
+- Don't use templates
+- Don't use virtual.
+- Don't use inheritance.
+- Don't use exceptions.
+- Don't use RAII.
+- Don't use namespaces
+- Don't use malloc / calloc / realloc / free
+
+## Do's
+
+- Use tabs. 1 tab = 2 spaces.
+- Don't return early from functions if you can help it.
 - switch is written like
 ```.cpp
 switch(type)
@@ -24,13 +43,10 @@ switch(type)
     }break;
 }
 ```
-- single assignments / statements per line
+- single assignments / statements per line 
+- use designated initializers whenever possible. put everything on a separate line
 
-### 2 Breaking long lines and strings
-
-- my award winning editor has line wrap so I don't know what to say. If its easy to follow, break it, if not, don't
-
-### 3 Placing Braces and Spaces
+- get line wrap, then wonder if you want to break.
 
 - if/elses/functions are always written with brackets like this
 
@@ -39,77 +55,42 @@ if(something)
 {
     // 1 or more lines
 }
+else
+{
+
+}
 ```
 
-### 3.1
-https://www.kernel.org/doc/html/v4.10/process/coding-style.html#spaces
-
-### 4
 - MACRO_CONSTANTS_ARE_SCREAMING_SNAKE_CASE
 - macroFunctionsLikeThis()
 - snake_case_for_everything_else 
 
-enum hi
+enum hi_type
 {
 	hi_uninitialized,
   hi_hello,
   hi_bye,
-  hi_count
+  hi_num
 };
 
-### 5
 - no typedefs for pointers and structs
 - stdint types are typedef'd. Check `include/common.h`
-- enums and unions are typedef'd
 - unions inside of structs are anonymous
 
-Note: If this is a C codebase, we do
+- Use local blocks { } and write //comments above it to hold blocks of code that you want to semanticaly divide.
+- i will delete gratituous functions
 
-```
-struct foo *foo;
-```
+- avoid goto. Sometimes they are needed for elegant quitting. But are avoidable in 99% of cases. Keyword - "avoid"
 
-if C++, we do
-
-```
-foo *foo;
-```
-
-### 6
-- functions are as long as need be. Use local blocks { } and write //comments above it to hold blocks of text that you want to semanticaly divide. Make a function only if you find yourself writing the same code. Or if its an easier representation (consider local macros for this. My award winning language will have proper aliases). 
-
-### 7
-- avoid goto. Sometimes they are needed for elegant quitting. But are avoidable in 99% of cases.
-
-### 8
 - Use note(name) or todo(name) to annotate as appropriate
-- always mention unhandled edge cases / bugs / quirks / something misc that could be helpful to the next programmer that works on the code. Heck, if you were stumped by a problem while implementing it, share why you did what.
-- somethings are complex and some things aren't. if someone puts everything inside the self documenting code banner, they have never done anything remotely complex.
-- that being said, don't comment unless required. If you write something, I'll assume its worth my time. If its not, I will take snatch that time from your lifespan to restore my own.
+- mention unhandled edge cases / bugs / quirks / something misc that could be helpful to the next programmer that works on the code.
+- this isn't an invitation to comment gratituosly.
 
-### 9 - 14 (not relevant / covered elsewhere)
+- ctrl f Arena and ArenaTemp to learn how memory is managed in this codebase.
 
-### 14
-- only one allocation is made, which is zero initialized, and then that memory is given to whoever needs it. This memory is never freed.
-- for times when the upper limit for allocations cannot be predicted (as is case for parsing files that are several thousands of lines long), a different strategy will be used. We haven't reached this state, so we won't be exploring it.
 
-### 15
-- inline doesn't do anything. modern compilers ignore it. Don't use it.
+- booleans are b32 (stdint int32 type). true is 1, false is 0
 
-### 16
-
-- booleans are b32. true is 1, false is 0
-
-### misc
-- Files include nothing, except for two cases - 1) `main.cpp` includes everything it needs (with < >). 2) `xxx_inc.h` includes other files inside its directory (with " ")
-- mark all functions with internal linkage as internal and all globals with global and all local static vars with local_persist
-- header gaurds in header files.
-- Don't use const.
-- Don't use the crt.
-- Don't use the stl.
-- Don't use templates
-- Don't use virtual.
-- Don't use exceptions.
-- Don't use new / delete
-- I don't see enough value in namespaces. This is subject to change.
+- unity build.
 - only math is operator overloaded
+- all (99%) functions are internal. globals are global and local static variables are local_persist. These are all just `static` that have been `#define`'d over

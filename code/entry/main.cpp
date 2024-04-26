@@ -209,6 +209,9 @@ int __stdcall mainCRTStartup()
     arena_innit(&scratch, (mem_size - arena_size) ,  (u8*)memory + arena_size);
     
     // vulkan lets go
+    // todo(facts): preemptively make a vk_state and put this crap in there
+    // all this is crap boilerplate. i have done this before so there's nothing
+    // wrong to do it.
     
     u32 version = 0;
     vkEnumerateInstanceVersion(&version);
@@ -344,8 +347,6 @@ int __stdcall mainCRTStartup()
     
     // todo(facts): set device features / properties
     
-    // todo(facts): preemptively make a vk_state and put this crap in there
-    
     // surfaces
     VkSurfaceKHR surface = {};
     {
@@ -363,6 +364,11 @@ int __stdcall mainCRTStartup()
     
     // queue stuff
     // No comparisions to find best queue is done. But the scaffolding is there
+    // basically do an extra check to verify that the queue i picked does purely
+    // what i hope it does, and not a hybrid. if it purely does that, move on
+    // and set its found to true
+    // if not, don't set found to true and hope some queue down the line finds what
+    // its looking for
     
     u32 qfams[qfam_num] = {};
     
@@ -439,6 +445,7 @@ int __stdcall mainCRTStartup()
     
     {
       ArenaTemp temp_arena = arena_temp_begin(&scratch);
+      
       
       
       arena_temp_end(&temp_arena);

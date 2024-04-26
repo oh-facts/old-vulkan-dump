@@ -26,7 +26,11 @@ Uses clang. Write your own for other compilers. Scroll down to learn how.
 
 ### Linux / mac
 
-You need to have wine dev tools installed (winemaker). Should compile without problems.
+I don't maintain this anymore since my wsl does not have vk 1.3.
+You'd beed wine dev tools to do it. Thats what the shell script uses.
+
+Until I get me a linux and god forbid a mac, I can't make back ends. Feel free to make them yourself. Once the platform layer receives more structure, you can try mirroring the respective backends.
+
 ```
 mkdir out
 ./build.sh
