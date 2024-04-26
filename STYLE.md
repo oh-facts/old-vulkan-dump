@@ -18,7 +18,8 @@ I am keeping them brief and removing snide to save time.
 - Don't use exceptions.
 - Don't use RAII.
 - Don't use namespaces
-- Don't use malloc / calloc / realloc / free
+- Don't use malloc / calloc / realloc / free for managing memory
+- Don't use compiler intrinsics
 
 ## Do's
 
@@ -43,7 +44,6 @@ switch(type)
     }break;
 }
 ```
-- single assignments / statements per line 
 - use designated initializers whenever possible. put everything on a separate line
 
 - get line wrap, then wonder if you want to break.
