@@ -224,7 +224,7 @@ int __stdcall mainCRTStartup()
     
 #if defined(OS_WIN32)
     extentions[extention_num++] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#elif defined(OS_UNIX)
+#elif defined(OS_LINUX)
     extentions[extention_num++] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 #endif
     
